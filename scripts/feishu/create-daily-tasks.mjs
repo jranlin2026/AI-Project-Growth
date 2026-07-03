@@ -14,9 +14,22 @@ function parseArgs(argv) {
       args.test = true;
     } else if (token === "--no-tasklist") {
       args.noTasklist = true;
+    } else if (token === "--date") {
+      args.date = argv[i + 1];
+      i += 1;
     }
   }
   return args;
+}
+
+function dateFromArg(value) {
+  if (!value) return new Date();
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) {
+    throw new Error("Use --date in YYYY-MM-DD format.");
+  }
+  const [, year, month, day] = match;
+  return new Date(Date.UTC(Number(year), Number(month) - 1, Number(day), 4, 0, 0, 0));
 }
 
 function shanghaiDateParts(date = new Date()) {
@@ -43,6 +56,13 @@ function shanghaiDateLabel(date = new Date()) {
     weekday: "short"
   });
   return formatter.format(date);
+}
+
+function shanghaiWeekday(date = new Date()) {
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Shanghai",
+    weekday: "short"
+  }).format(date);
 }
 
 function taskLink(taskGuid) {
@@ -85,6 +105,16 @@ function attachRouting(payload, memberEnvName, options = {}) {
   return payload;
 }
 
+function makeTask(payload, memberEnvName, options) {
+  return attachRouting(payload, memberEnvName, options);
+}
+
+function availabilityNote(weekday) {
+  if (weekday === "Sat") return "排班提醒：彭涵奕每周六休息，今天不分配编导B执行任务；剪辑/发布类工作默认使用前一工作日预排素材或顺延。";
+  if (weekday === "Sun") return "排班提醒：朱勇浩每周日休息，今天不分配编导A执行任务；脚本/选题类工作默认使用前一工作日预备稿或由林总临时确认。";
+  return "排班提醒：今日三人均按 09:00-18:00 工作制协作。";
+}
+
 async function createTask(payload) {
   const response = await feishuRequest("/task/v2/tasks", {
     method: "POST",
@@ -106,9 +136,12 @@ function getTaskGuid(task) {
 }
 
 const args = parseArgs(process.argv.slice(2));
-const dateLabel = shanghaiDateLabel();
-const due17 = shanghaiTimestampMs(17);
-const due2130 = shanghaiTimestampMs(21, 30);
+const runDate = dateFromArg(args.date);
+const weekday = shanghaiWeekday(runDate);
+const dateLabel = shanghaiDateLabel(runDate);
+const due16 = shanghaiTimestampMs(16, 0, runDate);
+const due17 = shanghaiTimestampMs(17, 0, runDate);
+const due1730 = shanghaiTimestampMs(17, 30, runDate);
 
 const parentTask = attachRouting({
   summary: args.test ? `${dateLabel} AI商业IP增长项目 飞书任务API测试` : `${dateLabel} AI商业IP增长项目 今日作战任务`,
@@ -121,7 +154,8 @@ const parentTask = attachRouting({
         "核心观点：老板做 AI，第一步不是学工具，而是先找到公司最贵的问题。",
         "固定 CTA：评论区打“实战地图”。",
         "",
-        "17:00 前更新任务状态，并在多维表格填写日报。"
+        availabilityNote(weekday),
+        "工作时间：09:00-18:00。所有人工执行任务默认在 17:30 前完成状态更新和数据初填。"
       ].join("\n"),
   due: {
     timestamp: String(due17),
@@ -129,36 +163,76 @@ const parentTask = attachRouting({
   }
 }, "FEISHU_TASK_OWNER_OPEN_IDS", { noTasklist: args.noTasklist });
 
+const normalSubtasks = [
+  makeTask({
+    summary: "林总：完成今日出镜拍摄",
+    description: "16:00 前完成 S001 口播录制，至少录 2 个开头版本。重点表达：最贵问题 -> 流程拆解 -> 工具匹配。",
+    due: { timestamp: String(due16), is_all_day: false }
+  }, "FEISHU_LIN_OPEN_IDS", { noTasklist: args.noTasklist }),
+  makeTask({
+    summary: "编导A：完成今日脚本和明日选题",
+    description: "12:00 前检查 S001 口播表达是否顺口；17:30 前准备明天 3 条认知纠偏脚本备选；记录评论区/群内可二创选题。",
+    due: { timestamp: String(due1730), is_all_day: false }
+  }, "FEISHU_DIRECTOR_A_OPEN_IDS", { noTasklist: args.noTasklist }),
+  makeTask({
+    summary: "编导B：完成剪辑、发布、评论承接和数据记录",
+    description: "17:30 前按《剪辑工作台.md》完成 S001 成片；按《发布记录.md》准备账号 B 发布；盯评论“实战地图”“怎么拿”“适合什么行业”“怎么落地”。",
+    due: { timestamp: String(due1730), is_all_day: false }
+  }, "FEISHU_DIRECTOR_B_OPEN_IDS", { noTasklist: args.noTasklist }),
+  makeTask({
+    summary: "编导B：填写视频数据记录",
+    description: "17:30 前完成视频数据初填，包括账号、发布时间、标题、内容类型、开头钩子、播放、点赞、评论、实战地图评论、私信、进群、老板型线索和真实业务问题。次日上午 09:30 可补充隔夜数据。",
+    due: { timestamp: String(due1730), is_all_day: false }
+  }, "FEISHU_DIRECTOR_B_OPEN_IDS", { noTasklist: args.noTasklist })
+];
+
+const saturdaySubtasks = [
+  makeTask({
+    summary: "林总：完成今日出镜拍摄或确认预排素材",
+    description: "16:00 前完成口播录制；若今日使用预排素材，则确认最终发布口径。彭涵奕周六休息，不安排剪辑/发布执行任务。",
+    due: { timestamp: String(due16), is_all_day: false }
+  }, "FEISHU_LIN_OPEN_IDS", { noTasklist: args.noTasklist }),
+  makeTask({
+    summary: "编导A：完成今日脚本复核和周日预备选题",
+    description: "12:00 前复核今日脚本；17:30 前准备周日可直接使用的脚本/选题，避免周日朱勇浩休息时断档。",
+    due: { timestamp: String(due1730), is_all_day: false }
+  }, "FEISHU_DIRECTOR_A_OPEN_IDS", { noTasklist: args.noTasklist }),
+  makeTask({
+    summary: "林总：周六发布状态确认（彭休）",
+    description: "17:30 前确认今天是否发布：优先使用周五已完成/预排素材；如没有可发布素材，则在任务评论里说明顺延原因和明天补救安排。",
+    due: { timestamp: String(due1730), is_all_day: false }
+  }, "FEISHU_LIN_OPEN_IDS", { noTasklist: args.noTasklist })
+];
+
+const sundaySubtasks = [
+  makeTask({
+    summary: "林总：完成今日出镜拍摄和脚本最终确认",
+    description: "朱勇浩周日休息，今日脚本使用周六预备稿或由林总临时确认；16:00 前完成拍摄或最终素材确认。",
+    due: { timestamp: String(due16), is_all_day: false }
+  }, "FEISHU_LIN_OPEN_IDS", { noTasklist: args.noTasklist }),
+  makeTask({
+    summary: "编导B：完成剪辑、发布、评论承接",
+    description: "17:30 前完成今日素材剪辑和发布；如果脚本需要微调，基于林总确认稿处理，不打扰朱勇浩休息。",
+    due: { timestamp: String(due1730), is_all_day: false }
+  }, "FEISHU_DIRECTOR_B_OPEN_IDS", { noTasklist: args.noTasklist }),
+  makeTask({
+    summary: "编导B：填写视频数据记录",
+    description: "17:30 前完成视频数据初填；次日上午 09:30 可补充隔夜数据。",
+    due: { timestamp: String(due1730), is_all_day: false }
+  }, "FEISHU_DIRECTOR_B_OPEN_IDS", { noTasklist: args.noTasklist })
+];
+
+const workdaySubtasks = weekday === "Sat" ? saturdaySubtasks : weekday === "Sun" ? sundaySubtasks : normalSubtasks;
+
 const subtasks = args.test
   ? [
-      attachRouting({
+      makeTask({
         summary: "系统测试子任务：确认任务 API 可创建子任务",
         description: "系统测试，可删除。",
         due: { timestamp: String(due17), is_all_day: false }
       }, "FEISHU_TASK_OWNER_OPEN_IDS", { noTasklist: args.noTasklist })
     ]
-  : [
-      attachRouting({
-        summary: "林总：完成今日出镜拍摄",
-        description: "17:00 前完成 S001 口播录制，至少录 2 个开头版本。重点表达：最贵问题 -> 流程拆解 -> 工具匹配。",
-        due: { timestamp: String(due17), is_all_day: false }
-      }, "FEISHU_LIN_OPEN_IDS", { noTasklist: args.noTasklist }),
-      attachRouting({
-        summary: "编导A：完成今日脚本和明日选题",
-        description: "检查 S001 口播表达是否顺口；准备明天 3 条认知纠偏脚本备选；记录评论区/群内可二创选题。",
-        due: { timestamp: String(due17), is_all_day: false }
-      }, "FEISHU_DIRECTOR_A_OPEN_IDS", { noTasklist: args.noTasklist }),
-      attachRouting({
-        summary: "编导B：完成剪辑、发布、评论承接和数据记录",
-        description: "按《剪辑工作台.md》完成 S001 成片；按《发布记录.md》准备账号 B 发布；盯评论“实战地图”“怎么拿”“适合什么行业”“怎么落地”。",
-        due: { timestamp: String(due17), is_all_day: false }
-      }, "FEISHU_DIRECTOR_B_OPEN_IDS", { noTasklist: args.noTasklist }),
-      attachRouting({
-        summary: "编导B：填写视频数据记录",
-        description: "在飞书多维表格填写每条视频数据，包括播放、点赞、评论、实战地图评论、私信、进群、老板型线索和真实业务问题。",
-        due: { timestamp: String(due2130), is_all_day: false }
-      }, "FEISHU_DIRECTOR_B_OPEN_IDS", { noTasklist: args.noTasklist })
-    ];
+  : workdaySubtasks;
 
 if (args.dryRun) {
   console.log(JSON.stringify({ parentTask, subtasks }, null, 2));
