@@ -52,12 +52,19 @@ contact:user.id:readonly
 - `task:task:write`
 - `task:task:writeonly`
 
+如果要让 Codex 自动读取、创建或维护飞书任务清单，还需要开通以下权限之一：
+
+- `task:tasklist:write`
+- `task:tasklist:writeonly`
+- `task:tasklist:read`（只读取清单任务时可用）
+
 开通后需要发布应用版本，使权限生效。
 
 任务可见性排障：
 
 - 如果 API 创建成功，但你在飞书任务清单里看到 0 个任务，通常是任务没有绑定到 `FEISHU_TASKLIST_GUID`。
 - 如果右侧提示“暂无权限查看该任务”，通常是任务由企业应用创建，但没有把你或组员加为负责人/关注人。
+- 如果接口返回 `Invoker is unauthorized to add task to tasklist`，说明应用对该清单没有可编辑权限。可以把应用加为清单可编辑协作成员；如果飞书界面不支持直接加应用，则让 Codex 通过 `create-tasklist.mjs` 创建一个应用拥有的新清单，再共享给成员。
 - 解决方式是在 `.env` 补齐任务清单和成员配置后，重新运行 `node scripts/feishu/create-daily-tasks.mjs --test`。
 
 `.env` 需要补齐：

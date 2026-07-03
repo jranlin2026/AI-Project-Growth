@@ -43,6 +43,7 @@
 | `scripts/feishu/create-bitable-record.mjs` | 创建一条日报或视频数据测试记录 |
 | `scripts/feishu/read-bitable-records.mjs` | 读取多维表格记录 |
 | `scripts/feishu/create-daily-tasks.mjs` | 创建飞书每日父任务和子任务 |
+| `scripts/feishu/create-tasklist.mjs` | 创建由应用拥有并共享给成员的任务清单 |
 | `scripts/feishu/get-user-ids.mjs` | 用手机号或邮箱换取成员 open_id/user_id |
 | `scripts/feishu/search-tasklists.mjs` | 搜索飞书任务清单 GUID |
 | `scripts/feishu/list-tasklist-tasks.mjs` | 读取指定任务清单下的任务 |
@@ -80,7 +81,9 @@ node scripts/feishu/generate-daily-task.mjs | node scripts/feishu/send-webhook.m
 node scripts/feishu/get-user-ids.mjs --mobile "手机号1,手机号2,手机号3"
 node scripts/feishu/get-user-ids.mjs --email "邮箱1,邮箱2,邮箱3"
 node scripts/feishu/search-tasklists.mjs --keyword "AI商业IP增长项目"
+node scripts/feishu/create-tasklist.mjs --name "AI商业IP增长项目每日作战-Codex自动化"
 node scripts/feishu/create-daily-tasks.mjs --test
+node scripts/feishu/create-daily-tasks.mjs --test --no-tasklist
 node scripts/feishu/list-subtasks.mjs --task-guid "父任务guid"
 ```
 

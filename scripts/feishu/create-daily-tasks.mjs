@@ -12,6 +12,8 @@ function parseArgs(argv) {
       args.dryRun = true;
     } else if (token === "--test") {
       args.test = true;
+    } else if (token === "--no-tasklist") {
+      args.noTasklist = true;
     }
   }
   return args;
@@ -53,13 +55,14 @@ function extractGuid(value) {
   return guidMatch ? guidMatch[0] : value;
 }
 
-function tasklistsFromEnv() {
+function tasklistsFromEnv(skipTasklist = false) {
+  if (skipTasklist) return [];
   const raw = process.env.FEISHU_TASKLIST_GUID || process.env.FEISHU_TASKLIST_URL || "";
   return raw
     .split(",")
     .map((item) => extractGuid(item.trim()))
     .filter(Boolean)
-    .map((guid) => ({ guid }));
+    .map((guid) => ({ tasklist_guid: guid }));
 }
 
 function membersFromEnv(envName, role) {
@@ -71,8 +74,8 @@ function membersFromEnv(envName, role) {
     .map((id) => ({ id, type: "user", role }));
 }
 
-function attachRouting(payload, memberEnvName) {
-  const tasklists = tasklistsFromEnv();
+function attachRouting(payload, memberEnvName, options = {}) {
+  const tasklists = tasklistsFromEnv(options.noTasklist);
   const members = [
     ...membersFromEnv(memberEnvName, "assignee"),
     ...membersFromEnv("FEISHU_TASK_FOLLOWER_OPEN_IDS", "follower")
@@ -124,7 +127,7 @@ const parentTask = attachRouting({
     timestamp: String(due17),
     is_all_day: false
   }
-}, "FEISHU_TASK_OWNER_OPEN_IDS");
+}, "FEISHU_TASK_OWNER_OPEN_IDS", { noTasklist: args.noTasklist });
 
 const subtasks = args.test
   ? [
@@ -132,29 +135,29 @@ const subtasks = args.test
         summary: "系统测试子任务：确认任务 API 可创建子任务",
         description: "系统测试，可删除。",
         due: { timestamp: String(due17), is_all_day: false }
-      }, "FEISHU_TASK_OWNER_OPEN_IDS")
+      }, "FEISHU_TASK_OWNER_OPEN_IDS", { noTasklist: args.noTasklist })
     ]
   : [
       attachRouting({
         summary: "林总：完成今日出镜拍摄",
         description: "17:00 前完成 S001 口播录制，至少录 2 个开头版本。重点表达：最贵问题 -> 流程拆解 -> 工具匹配。",
         due: { timestamp: String(due17), is_all_day: false }
-      }, "FEISHU_LIN_OPEN_IDS"),
+      }, "FEISHU_LIN_OPEN_IDS", { noTasklist: args.noTasklist }),
       attachRouting({
         summary: "编导A：完成今日脚本和明日选题",
         description: "检查 S001 口播表达是否顺口；准备明天 3 条认知纠偏脚本备选；记录评论区/群内可二创选题。",
         due: { timestamp: String(due17), is_all_day: false }
-      }, "FEISHU_DIRECTOR_A_OPEN_IDS"),
+      }, "FEISHU_DIRECTOR_A_OPEN_IDS", { noTasklist: args.noTasklist }),
       attachRouting({
         summary: "编导B：完成剪辑、发布、评论承接和数据记录",
         description: "按《剪辑工作台.md》完成 S001 成片；按《发布记录.md》准备账号 B 发布；盯评论“实战地图”“怎么拿”“适合什么行业”“怎么落地”。",
         due: { timestamp: String(due17), is_all_day: false }
-      }, "FEISHU_DIRECTOR_B_OPEN_IDS"),
+      }, "FEISHU_DIRECTOR_B_OPEN_IDS", { noTasklist: args.noTasklist }),
       attachRouting({
         summary: "编导B：填写视频数据记录",
         description: "在飞书多维表格填写每条视频数据，包括播放、点赞、评论、实战地图评论、私信、进群、老板型线索和真实业务问题。",
         due: { timestamp: String(due2130), is_all_day: false }
-      }, "FEISHU_DIRECTOR_B_OPEN_IDS")
+      }, "FEISHU_DIRECTOR_B_OPEN_IDS", { noTasklist: args.noTasklist })
     ];
 
 if (args.dryRun) {
