@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 // Feishu Task OpenAPI permissions vary by tenant setup. This script prints the
 // task structure Codex should create after Feishu app permissions are confirmed.
 
@@ -14,8 +14,8 @@ const task = {
   title: `${date} AI商业IP增长项目 今日作战任务`,
   subtasks: [
     {
-      title: "林总：完成今日出镜拍摄",
-      owner: "林总",
+      title: "N哥：完成今日出镜拍摄",
+      owner: "N哥",
       due: "17:00"
     },
     {

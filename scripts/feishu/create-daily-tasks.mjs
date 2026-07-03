@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 import { loadEnv } from "./env.mjs";
 import { feishuRequest } from "./feishu-openapi.mjs";
 
@@ -111,7 +111,7 @@ function makeTask(payload, memberEnvName, options) {
 
 function availabilityNote(weekday) {
   if (weekday === "Sat") return "排班提醒：彭涵奕每周六休息，今天不分配编导B执行任务；剪辑/发布类工作默认使用前一工作日预排素材或顺延。";
-  if (weekday === "Sun") return "排班提醒：朱勇浩每周日休息，今天不分配编导A执行任务；脚本/选题类工作默认使用前一工作日预备稿或由林总临时确认。";
+  if (weekday === "Sun") return "排班提醒：朱勇浩每周日休息，今天不分配编导A执行任务；脚本/选题类工作默认使用前一工作日预备稿或由N哥临时确认。";
   return "排班提醒：今日三人均按 09:00-18:00 工作制协作。";
 }
 
@@ -165,7 +165,7 @@ const parentTask = attachRouting({
 
 const normalSubtasks = [
   makeTask({
-    summary: "林总：完成今日出镜拍摄",
+    summary: "N哥：完成今日出镜拍摄",
     description: "16:00 前完成 S001 口播录制，至少录 2 个开头版本。重点表达：最贵问题 -> 流程拆解 -> 工具匹配。",
     due: { timestamp: String(due16), is_all_day: false }
   }, "FEISHU_LIN_OPEN_IDS", { noTasklist: args.noTasklist }),
@@ -188,7 +188,7 @@ const normalSubtasks = [
 
 const saturdaySubtasks = [
   makeTask({
-    summary: "林总：完成今日出镜拍摄或确认预排素材",
+    summary: "N哥：完成今日出镜拍摄或确认预排素材",
     description: "16:00 前完成口播录制；若今日使用预排素材，则确认最终发布口径。彭涵奕周六休息，不安排剪辑/发布执行任务。",
     due: { timestamp: String(due16), is_all_day: false }
   }, "FEISHU_LIN_OPEN_IDS", { noTasklist: args.noTasklist }),
@@ -198,7 +198,7 @@ const saturdaySubtasks = [
     due: { timestamp: String(due1730), is_all_day: false }
   }, "FEISHU_DIRECTOR_A_OPEN_IDS", { noTasklist: args.noTasklist }),
   makeTask({
-    summary: "林总：周六发布状态确认（彭休）",
+    summary: "N哥：周六发布状态确认（彭休）",
     description: "17:30 前确认今天是否发布：优先使用周五已完成/预排素材；如没有可发布素材，则在任务评论里说明顺延原因和明天补救安排。",
     due: { timestamp: String(due1730), is_all_day: false }
   }, "FEISHU_LIN_OPEN_IDS", { noTasklist: args.noTasklist })
@@ -206,13 +206,13 @@ const saturdaySubtasks = [
 
 const sundaySubtasks = [
   makeTask({
-    summary: "林总：完成今日出镜拍摄和脚本最终确认",
-    description: "朱勇浩周日休息，今日脚本使用周六预备稿或由林总临时确认；16:00 前完成拍摄或最终素材确认。",
+    summary: "N哥：完成今日出镜拍摄和脚本最终确认",
+    description: "朱勇浩周日休息，今日脚本使用周六预备稿或由N哥临时确认；16:00 前完成拍摄或最终素材确认。",
     due: { timestamp: String(due16), is_all_day: false }
   }, "FEISHU_LIN_OPEN_IDS", { noTasklist: args.noTasklist }),
   makeTask({
     summary: "编导B：完成剪辑、发布、评论承接",
-    description: "17:30 前完成今日素材剪辑和发布；如果脚本需要微调，基于林总确认稿处理，不打扰朱勇浩休息。",
+    description: "17:30 前完成今日素材剪辑和发布；如果脚本需要微调，基于N哥确认稿处理，不打扰朱勇浩休息。",
     due: { timestamp: String(due1730), is_all_day: false }
   }, "FEISHU_DIRECTOR_B_OPEN_IDS", { noTasklist: args.noTasklist }),
   makeTask({

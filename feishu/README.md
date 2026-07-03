@@ -45,6 +45,7 @@
 | `scripts/feishu/create-daily-tasks.mjs` | 创建飞书每日父任务和子任务 |
 | `scripts/feishu/create-day1-official-tasks.mjs` | 用 UTF-8 脚本重建 Day1 详细正式任务，避免 PowerShell 中文转码 |
 | `scripts/feishu/update-day1-s001-oral-tasks.mjs` | 把 Day1 S001 飞书任务更新为口语化拍摄、剪辑和数据指令 |
+| `scripts/feishu/send-day2-s002-group-doc.mjs` | 向飞书群发送 Day2 S002 安排摘要和完整拍摄脚本文档 |
 | `scripts/feishu/add-task-members.mjs` | 给已存在的任务补负责人或关注人 |
 | `scripts/feishu/create-tasklist.mjs` | 创建由应用拥有并共享给成员的任务清单 |
 | `scripts/feishu/delete-task.mjs` | 删除测试任务或废弃任务 |

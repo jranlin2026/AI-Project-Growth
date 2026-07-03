@@ -1,4 +1,4 @@
-{
+﻿{
   "project": "AI商业IP增长项目",
   "roles": [
     {
@@ -7,8 +7,8 @@
       "responsibilities": ["生成每日任务", "验收交付", "分析日报", "安排次日任务"]
     },
     {
-      "role": "林总",
-      "owner": "林总",
+      "role": "N哥",
+      "owner": "N哥",
       "responsibilities": ["真人出镜", "确认核心观点", "录制口播原片"]
     },
     {
