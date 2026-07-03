@@ -88,13 +88,6 @@ const parentTask = {
   due: {
     timestamp: String(due17),
     is_all_day: false
-  },
-  origin: {
-    platform_i18n_name: "Codex 增长负责人",
-    href: {
-      title: "AI商业IP增长项目",
-      url: "https://github.com/jranlin2026/AI-Project-Growth"
-    }
   }
 };
 
@@ -163,4 +156,3 @@ const result = {
 };
 
 console.log(JSON.stringify(result, null, 2));
-
