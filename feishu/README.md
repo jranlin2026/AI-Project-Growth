@@ -43,6 +43,7 @@
 | `scripts/feishu/create-bitable-record.mjs` | 创建一条日报或视频数据测试记录 |
 | `scripts/feishu/read-bitable-records.mjs` | 读取多维表格记录 |
 | `scripts/feishu/create-daily-tasks.mjs` | 创建飞书每日父任务和子任务 |
+| `scripts/feishu/add-task-members.mjs` | 给已存在的任务补负责人或关注人 |
 | `scripts/feishu/create-tasklist.mjs` | 创建由应用拥有并共享给成员的任务清单 |
 | `scripts/feishu/get-user-ids.mjs` | 用手机号或邮箱换取成员 open_id/user_id |
 | `scripts/feishu/search-tasklists.mjs` | 搜索飞书任务清单 GUID |
