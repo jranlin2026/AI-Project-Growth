@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>老板 AI 落地实战地图</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #657089;
+      --line: #d9dfeb;
+      --bg: #f7f9fc;
+      --panel: #ffffff;
+      --blue: #2563eb;
+      --green: #0f9f6e;
+      --amber: #d97706;
+      --red: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      line-height: 1.65;
+    }
+
+    .page {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 32px 20px 56px;
+    }
+
+    .cover {
+      padding: 44px 40px;
+      background: #10213d;
+      color: #fff;
+      border-radius: 8px;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: #9fd0ff;
+      font-size: 14px;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 42px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      max-width: 680px;
+      margin: 18px 0 0;
+      color: #dbeafe;
+      font-size: 18px;
+    }
+
+    .cover-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .cover-item {
+      min-height: 96px;
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .cover-item b {
+      display: block;
+      margin-bottom: 6px;
+      color: #fff;
+    }
+
+    .cover-item span {
+      color: #c7d2fe;
+      font-size: 14px;
+    }
+
+    section {
+      margin-top: 22px;
+      padding: 28px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: 26px;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 24px 0 10px;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 10px 0;
+    }
+
+    .lead {
+      font-size: 18px;
+      color: #26324a;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 18px 0 4px;
+    }
+
+    .pill {
+      padding: 7px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 14px;
+    }
+
+    .map {
+      width: 100%;
+      margin: 14px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .callout {
+      padding: 18px;
+      border-left: 5px solid var(--blue);
+      background: #eff6ff;
+      border-radius: 8px;
+    }
+
+    .warning {
+      border-left-color: var(--amber);
+      background: #fff7ed;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 11px 10px;
+      border: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f1f5f9;
+      color: #24324a;
+    }
+
+    .checklist {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .check {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfdff;
+    }
+
+    .num {
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .footer {
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+    }
+
+    @media (max-width: 760px) {
+      .cover {
+        padding: 32px 22px;
+      }
+
+      h1 {
+        font-size: 32px;
+      }
+
+      .cover-grid,
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      section {
+        padding: 22px;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .page {
+        max-width: none;
+        padding: 0;
+      }
+
+      section,
+      .cover {
+        break-inside: avoid;
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="cover">
+      <p class="eyebrow">给中小企业老板的 AI 落地路线图</p>
+      <h1>老板 AI 落地实战地图</h1>
+      <p class="subtitle">别从收藏工具开始。先找到公司最贵的问题，把流程拆清楚，再选择 AI 去改造一个能看见结果的小环节。</p>
+      <div class="cover-grid">
+        <div class="cover-item"><b>找问题</b><span>找到最影响收入、成本或客户体验的业务问题。</span></div>
+        <div class="cover-item"><b>拆流程</b><span>把问题画成 5-7 个步骤，找到重复、慢、丢客户的环节。</span></div>
+        <div class="cover-item"><b>做试点</b><span>用 7 天做一个小试点，用数据决定保留还是调整。</span></div>
+      </div>
+    </header>
+
+    <section>
+      <h2>一张图看懂正确顺序</h2>
+      <p class="lead">老板做 AI，不是先学工具，而是先找到公司最贵的问题，再把流程拆清楚，最后选择 AI 去提效。</p>
+      <svg class="map" viewBox="0 0 920 190" role="img" aria-label="AI 落地流程图">
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#2563eb"></path>
+          </marker>
+        </defs>
+        <rect x="20" y="48" width="125" height="82" rx="8" fill="#eff6ff" stroke="#93c5fd"></rect>
+        <rect x="170" y="48" width="125" height="82" rx="8" fill="#ecfdf5" stroke="#86efac"></rect>
+        <rect x="320" y="48" width="125" height="82" rx="8" fill="#fff7ed" stroke="#fdba74"></rect>
+        <rect x="470" y="48" width="125" height="82" rx="8" fill="#fef2f2" stroke="#fca5a5"></rect>
+        <rect x="620" y="48" width="125" height="82" rx="8" fill="#f5f3ff" stroke="#c4b5fd"></rect>
+        <rect x="770" y="48" width="125" height="82" rx="8" fill="#f8fafc" stroke="#cbd5e1"></rect>
+        <g fill="#172033" font-size="18" font-weight="700" text-anchor="middle">
+          <text x="82" y="82">找最贵问题</text>
+          <text x="232" y="82">画业务流程</text>
+          <text x="382" y="82">找低效环节</text>
+          <text x="532" y="82">选 AI 切入</text>
+          <text x="682" y="82">7 天试点</text>
+          <text x="832" y="82">数据复盘</text>
+        </g>
+        <g fill="#657089" font-size="13" text-anchor="middle">
+          <text x="82" y="108">影响收入/成本</text>
+          <text x="232" y="108">拆成 5-7 步</text>
+          <text x="382" y="108">重复/慢/丢客户</text>
+          <text x="532" y="108">低风险先试</text>
+          <text x="682" y="108">小范围跑通</text>
+          <text x="832" y="108">保留或调整</text>
+        </g>
+        <g stroke="#2563eb" stroke-width="3" marker-end="url(#arrow)">
+          <line x1="145" y1="89" x2="164" y2="89"></line>
+          <line x1="295" y1="89" x2="314" y2="89"></line>
+          <line x1="445" y1="89" x2="464" y2="89"></line>
+          <line x1="595" y1="89" x2="614" y2="89"></line>
+          <line x1="745" y1="89" x2="764" y2="89"></line>
+        </g>
+      </svg>
+      <div class="callout">
+        <b>关键判断：</b>如果 AI 没有进入业务流程，它就只是工具收藏夹；如果 AI 能让流程更快、更稳、更可复盘，它才开始产生业务价值。
+      </div>
+    </section>
+
+    <section>
+      <h2>第一步：找到公司最贵的问题</h2>
+      <p>先不要问“哪个 AI 工具好用”，先问：公司现在哪个问题最贵、最重复、最影响收入或成本？</p>
+      <table>
+        <thead>
+          <tr><th>问题类型</th><th>典型表现</th><th>AI 切入方向</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>获客成本高</td><td>内容发了很多，没有精准咨询</td><td>选题生成、客户问题沉淀、内容复盘</td></tr>
+          <tr><td>销售跟进乱</td><td>客户问完就沉默，销售靠记忆跟进</td><td>跟进提醒、异议话术、客户分层</td></tr>
+          <tr><td>客服重复回复</td><td>每天重复回答相似问题</td><td>FAQ、标准回复、问题分类</td></tr>
+          <tr><td>内容生产慢</td><td>运营每天临时憋选题</td><td>选题库、脚本库、素材复用</td></tr>
+          <tr><td>管理反馈慢</td><td>老板不知道每天卡在哪里</td><td>日报总结、数据看板、异常提醒</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>第二步：把流程画出来</h2>
+      <p>AI 不能改造一团乱麻。你要先把业务流程画成一条线。</p>
+      <svg class="map" viewBox="0 0 920 220" role="img" aria-label="获客流程图">
+        <defs>
+          <marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#0f9f6e"></path>
+          </marker>
+        </defs>
+        <g fill="#ecfdf5" stroke="#86efac">
+          <rect x="28" y="50" width="116" height="76" rx="8"></rect>
+          <rect x="174" y="50" width="116" height="76" rx="8"></rect>
+          <rect x="320" y="50" width="116" height="76" rx="8"></rect>
+          <rect x="466" y="50" width="116" height="76" rx="8"></rect>
+          <rect x="612" y="50" width="116" height="76" rx="8"></rect>
+          <rect x="758" y="50" width="116" height="76" rx="8"></rect>
+        </g>
+        <g fill="#172033" font-size="16" font-weight="700" text-anchor="middle">
+          <text x="86" y="82">客户来源</text>
+          <text x="232" y="82">看到内容</text>
+          <text x="378" y="82">留下动作</text>
+          <text x="524" y="82">销售跟进</text>
+          <text x="670" y="82">问题沉淀</text>
+          <text x="816" y="82">成交复购</text>
+        </g>
+        <g fill="#657089" font-size="13" text-anchor="middle">
+          <text x="86" y="108">渠道/推荐</text>
+          <text x="232" y="108">短视频/图文</text>
+          <text x="378" y="108">评论/私信</text>
+          <text x="524" y="108">话术/提醒</text>
+          <text x="670" y="108">FAQ/案例</text>
+          <text x="816" y="108">方案/转介绍</text>
+        </g>
+        <g stroke="#0f9f6e" stroke-width="3" marker-end="url(#arrow2)">
+          <line x1="144" y1="88" x2="168" y2="88"></line>
+          <line x1="290" y1="88" x2="314" y2="88"></line>
+          <line x1="436" y1="88" x2="460" y2="88"></line>
+          <line x1="582" y1="88" x2="606" y2="88"></line>
+          <line x1="728" y1="88" x2="752" y2="88"></line>
+        </g>
+        <text x="460" y="170" fill="#172033" font-size="18" font-weight="700" text-anchor="middle">圈出最重复、最慢、最容易丢客户的一步，先用 AI 改造它。</text>
+      </svg>
+    </section>
+
+    <section>
+      <h2>第三步：选择 AI 切入点</h2>
+      <div class="grid-2">
+        <div class="callout">
+          <b>适合先做</b>
+          <p>选题生成、日报总结、客户问题整理、销售跟进提醒、标准回复、脚本草稿、数据复盘。</p>
+        </div>
+        <div class="callout warning">
+          <b>不适合先做</b>
+          <p>直接替代销售成交、重大客户判断、财务审批、全公司流程一次性重做。</p>
+        </div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">每周重复 5 次以上</span>
+        <span class="pill">输入输出清楚</span>
+        <span class="pill">人能快速检查</span>
+        <span class="pill">7 天能看到变化</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>7 天小试点</h2>
+      <table>
+        <thead>
+          <tr><th>天数</th><th>动作</th><th>交付物</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>第 1 天</td><td>选一个最贵问题</td><td>问题定义表</td></tr>
+          <tr><td>第 2 天</td><td>画出当前流程</td><td>流程图</td></tr>
+          <tr><td>第 3 天</td><td>找出 1 个 AI 切入点</td><td>试点动作</td></tr>
+          <tr><td>第 4 天</td><td>设计 AI 输入输出</td><td>提示词或模板</td></tr>
+          <tr><td>第 5 天</td><td>让员工跑一遍</td><td>试运行记录</td></tr>
+          <tr><td>第 6 天</td><td>对比人工和 AI 辅助结果</td><td>效果对比</td></tr>
+          <tr><td>第 7 天</td><td>决定保留、调整或放弃</td><td>复盘结论</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>老板自查表</h2>
+      <div class="checklist">
+        <div class="check"><span class="num">1</span><div>公司现在最贵的问题是什么？</div></div>
+        <div class="check"><span class="num">2</span><div>它属于获客、销售、客服、内容、管理中的哪一类？</div></div>
+        <div class="check"><span class="num">3</span><div>这个问题现在的流程有哪 5 个步骤？</div></div>
+        <div class="check"><span class="num">4</span><div>哪一步最重复、最慢或最容易丢客户？</div></div>
+        <div class="check"><span class="num">5</span><div>7 天内可以用 AI 先试哪一个小动作？</div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>最后提醒</h2>
+      <p class="lead">AI 不是工具收藏夹，也不是一键暴富按钮。AI 真正有价值的地方，是进入你的业务流程，让重复动作更快，让客户问题有沉淀，让老板更早看到执行中的异常。</p>
+      <div class="callout">
+        <b>正确顺序：</b>先找问题，再拆流程，最后选工具。
+      </div>
+    </section>
+
+    <p class="footer">老板 AI 落地实战地图｜用于业务诊断和 AI 试点规划，不承诺具体收益。</p>
+  </main>
+</body>
+</html>
