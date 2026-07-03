@@ -42,6 +42,7 @@
 | `scripts/feishu/setup-bitable-fields.mjs` | 自动补齐日报和视频数据字段 |
 | `scripts/feishu/create-bitable-record.mjs` | 创建一条日报或视频数据测试记录 |
 | `scripts/feishu/read-bitable-records.mjs` | 读取多维表格记录 |
+| `scripts/feishu/create-daily-tasks.mjs` | 创建飞书每日父任务和子任务 |
 
 ## 第一阶段测试命令
 
@@ -67,6 +68,18 @@ node scripts/feishu/generate-daily-task.mjs
 
 ```powershell
 node scripts/feishu/generate-daily-task.mjs | node scripts/feishu/send-webhook.mjs
+```
+
+创建飞书任务 API 测试任务：
+
+```powershell
+node scripts/feishu/create-daily-tasks.mjs --test
+```
+
+创建今日父任务和子任务：
+
+```powershell
+node scripts/feishu/create-daily-tasks.mjs
 ```
 
 读取日报表记录：
