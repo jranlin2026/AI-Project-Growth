@@ -37,6 +37,7 @@
 | `scripts/feishu/send-webhook.mjs` | 发送飞书群消息 |
 | `scripts/feishu/generate-daily-task.mjs` | 从项目文件生成每日任务文本 |
 | `scripts/feishu/feishu-openapi.mjs` | 飞书 OpenAPI 工具函数 |
+| `scripts/feishu/list-bitable-tables.mjs` | 列出多维表格中的 table_id |
 | `scripts/feishu/read-bitable-records.mjs` | 读取多维表格记录 |
 
 ## 第一阶段测试命令
@@ -68,6 +69,7 @@ node scripts/feishu/generate-daily-task.mjs | node scripts/feishu/send-webhook.m
 读取日报表记录：
 
 ```powershell
+node scripts/feishu/list-bitable-tables.mjs --app-token $env:FEISHU_DAILY_REPORT_APP_TOKEN
 node scripts/feishu/read-bitable-records.mjs --app-token $env:FEISHU_DAILY_REPORT_APP_TOKEN --table-id $env:FEISHU_DAILY_REPORT_TABLE_ID
 ```
 
