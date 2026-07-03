@@ -1,0 +1,31 @@
+{
+  "project": "AI商业IP增长项目",
+  "roles": [
+    {
+      "role": "增长负责人",
+      "owner": "Codex",
+      "responsibilities": ["生成每日任务", "验收交付", "分析日报", "安排次日任务"]
+    },
+    {
+      "role": "林总",
+      "owner": "林总",
+      "responsibilities": ["真人出镜", "确认核心观点", "录制口播原片"]
+    },
+    {
+      "role": "编导A",
+      "owner": "待填写",
+      "responsibilities": ["选题", "标题", "钩子", "脚本", "明日选题建议"]
+    },
+    {
+      "role": "编导B",
+      "owner": "待填写",
+      "responsibilities": ["剪辑", "发布", "评论承接", "粉丝群", "数据记录"]
+    },
+    {
+      "role": "数据分析智能体",
+      "owner": "Codex",
+      "responsibilities": ["读取日报", "分析视频数据", "识别老板线索", "输出复盘"]
+    }
+  ]
+}
+
