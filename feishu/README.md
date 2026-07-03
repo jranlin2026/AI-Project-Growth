@@ -40,6 +40,7 @@
 | `scripts/feishu/list-bitable-tables.mjs` | 列出多维表格中的 table_id |
 | `scripts/feishu/list-bitable-fields.mjs` | 列出多维表格中的字段 |
 | `scripts/feishu/setup-bitable-fields.mjs` | 自动补齐日报和视频数据字段 |
+| `scripts/feishu/create-bitable-record.mjs` | 创建一条日报或视频数据测试记录 |
 | `scripts/feishu/read-bitable-records.mjs` | 读取多维表格记录 |
 
 ## 第一阶段测试命令
@@ -74,6 +75,7 @@ node scripts/feishu/generate-daily-task.mjs | node scripts/feishu/send-webhook.m
 node scripts/feishu/list-bitable-tables.mjs --app-token $env:FEISHU_DAILY_REPORT_APP_TOKEN
 node scripts/feishu/list-bitable-fields.mjs --app-token $env:FEISHU_DAILY_REPORT_APP_TOKEN --table-id $env:FEISHU_DAILY_REPORT_TABLE_ID
 node scripts/feishu/setup-bitable-fields.mjs
+node scripts/feishu/create-bitable-record.mjs --schema daily
 node scripts/feishu/read-bitable-records.mjs --app-token $env:FEISHU_DAILY_REPORT_APP_TOKEN --table-id $env:FEISHU_DAILY_REPORT_TABLE_ID
 ```
 
