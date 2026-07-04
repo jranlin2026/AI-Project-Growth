@@ -110,8 +110,8 @@ function makeTask(payload, memberEnvName, options) {
 }
 
 function availabilityNote(weekday) {
-  if (weekday === "Sat") return "排班提醒：彭涵奕每周六休息，今天不分配编导B执行任务；剪辑/发布类工作默认使用前一工作日预排素材或顺延。";
-  if (weekday === "Sun") return "排班提醒：朱勇浩每周日休息，今天不分配编导A执行任务；脚本/选题类工作默认使用前一工作日预备稿或由N哥临时确认。";
+  if (weekday === "Sat") return "排班提醒：小彭每周六休息，今天不分配编导B执行任务；剪辑/发布类工作默认使用前一工作日预排素材或顺延。";
+  if (weekday === "Sun") return "排班提醒：阿浩每周日休息，今天不分配编导A执行任务；脚本/选题类工作默认使用前一工作日预备稿或由N哥临时确认。";
   return "排班提醒：今日三人均按 09:00-18:00 工作制协作。";
 }
 
@@ -189,12 +189,12 @@ const normalSubtasks = [
 const saturdaySubtasks = [
   makeTask({
     summary: "N哥：完成今日出镜拍摄或确认预排素材",
-    description: "16:00 前完成口播录制；若今日使用预排素材，则确认最终发布口径。彭涵奕周六休息，不安排剪辑/发布执行任务。",
+    description: "16:00 前完成口播录制；若今日使用预排素材，则确认最终发布口径。小彭周六休息，不安排剪辑/发布执行任务。",
     due: { timestamp: String(due16), is_all_day: false }
   }, "FEISHU_LIN_OPEN_IDS", { noTasklist: args.noTasklist }),
   makeTask({
     summary: "编导A：完成今日脚本复核和周日预备选题",
-    description: "12:00 前复核今日脚本；17:30 前准备周日可直接使用的脚本/选题，避免周日朱勇浩休息时断档。",
+    description: "12:00 前复核今日脚本；17:30 前准备周日可直接使用的脚本/选题，避免周日阿浩休息时断档。",
     due: { timestamp: String(due1730), is_all_day: false }
   }, "FEISHU_DIRECTOR_A_OPEN_IDS", { noTasklist: args.noTasklist }),
   makeTask({
@@ -207,12 +207,12 @@ const saturdaySubtasks = [
 const sundaySubtasks = [
   makeTask({
     summary: "N哥：完成今日出镜拍摄和脚本最终确认",
-    description: "朱勇浩周日休息，今日脚本使用周六预备稿或由N哥临时确认；16:00 前完成拍摄或最终素材确认。",
+    description: "阿浩周日休息，今日脚本使用周六预备稿或由N哥临时确认；16:00 前完成拍摄或最终素材确认。",
     due: { timestamp: String(due16), is_all_day: false }
   }, "FEISHU_LIN_OPEN_IDS", { noTasklist: args.noTasklist }),
   makeTask({
     summary: "编导B：完成剪辑、发布、评论承接",
-    description: "17:30 前完成今日素材剪辑和发布；如果脚本需要微调，基于N哥确认稿处理，不打扰朱勇浩休息。",
+    description: "17:30 前完成今日素材剪辑和发布；如果脚本需要微调，基于N哥确认稿处理，不打扰阿浩休息。",
     due: { timestamp: String(due1730), is_all_day: false }
   }, "FEISHU_DIRECTOR_B_OPEN_IDS", { noTasklist: args.noTasklist }),
   makeTask({
