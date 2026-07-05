@@ -42,6 +42,14 @@ function parseArgs(argv) {
 
 function explainFeishuError(error) {
   const message = String(error?.message || error);
+  if (message.includes("Bot ability is not activated") || message.includes('"code":232025')) {
+    return [
+      "Feishu app message permission may be available, but bot ability is not activated.",
+      "Enable Bot ability in Feishu Open Platform, publish the app version, add the bot to the project group, then rerun.",
+      "",
+      message
+    ].join("\n");
+  }
   if (message.includes("im:message")) {
     return [
       "Feishu app is missing message read permission.",

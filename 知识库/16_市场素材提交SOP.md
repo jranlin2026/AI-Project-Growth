@@ -217,7 +217,8 @@ node scripts/feishu/sync-market-materials-from-chat.mjs --hours 24
 前置条件：
 
 1. 飞书开放平台应用开通群聊读取权限。
-2. 飞书开放平台应用开通消息读取权限。
-3. `.env` 配置 `FEISHU_MARKET_MATERIAL_CHAT_ID`。
+2. 飞书开放平台应用开启机器人能力。
+3. 飞书开放平台应用开通消息读取权限。
+4. `.env` 配置 `FEISHU_MARKET_MATERIAL_CHAT_ID`。
 
 这条机制跑通后，组员只需要按三件套提交，不需要再单独提醒 Codex“我发了”。
