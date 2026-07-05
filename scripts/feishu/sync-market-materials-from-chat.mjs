@@ -103,6 +103,36 @@ function extractUrls(text) {
   return Array.from(new Set(text.match(/https?:\/\/[^\s"'<>，。；、]+/g) || []));
 }
 
+function envList(name) {
+  return (process.env[name] || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function buildSenderNameMap() {
+  const entries = [
+    ["N哥", envList("FEISHU_LIN_OPEN_IDS")],
+    ["阿浩", envList("FEISHU_DIRECTOR_A_OPEN_IDS")],
+    ["小彭", envList("FEISHU_DIRECTOR_B_OPEN_IDS")]
+  ];
+  return new Map(entries.flatMap(([name, ids]) => ids.map((id) => [id, name])));
+}
+
+const senderNameMap = buildSenderNameMap();
+
+function countImages(value) {
+  if (value == null) return 0;
+  if (Array.isArray(value)) return value.reduce((count, item) => count + countImages(item), 0);
+  if (typeof value !== "object") return 0;
+
+  let count = value.tag === "img" || typeof value.image_key === "string" ? 1 : 0;
+  for (const nested of Object.values(value)) {
+    if (typeof nested === "object") count += countImages(nested);
+  }
+  return count;
+}
+
 function formatChinaDate(date = new Date()) {
   const parts = new Intl.DateTimeFormat("zh-CN", {
     timeZone: "Asia/Shanghai",
@@ -115,7 +145,10 @@ function formatChinaDate(date = new Date()) {
 }
 
 function normalizeMessage(message) {
-  const content = safeJsonParse(message.body?.content);
+  const rawContent = safeJsonParse(message.body?.content);
+  const content = rawContent && typeof rawContent === "object" && "content_v2" in rawContent
+    ? { ...rawContent, content: undefined }
+    : rawContent;
   const text = collectText(content)
     .join("\n")
     .replace(/\n{3,}/g, "\n\n")
@@ -123,20 +156,22 @@ function normalizeMessage(message) {
   const createTimeMs = Number(message.create_time || message.update_time || 0);
   const sender = message.sender || {};
   const senderKey = `${sender.sender_type || "unknown"}:${sender.id || "unknown"}`;
+  const senderName = senderNameMap.get(sender.id) || (sender.sender_type === "app" ? "飞书机器人" : "未知成员");
 
   return {
     message_id: message.message_id,
     msg_type: message.msg_type,
     sender_key: senderKey,
     sender_id: sender.id || "",
+    sender_name: senderName,
     sender_type: sender.sender_type || "",
     create_time: message.create_time,
     create_time_ms: createTimeMs,
     create_time_local: createTimeMs ? new Date(createTimeMs).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" }) : "",
     text,
     urls: extractUrls(text),
-    has_image: message.msg_type === "image" || text.includes("image_key"),
-    raw_content: content
+    image_count: message.msg_type === "image" ? 1 : countImages(content),
+    raw_content: rawContent
   };
 }
 
@@ -169,14 +204,18 @@ async function listMessages({ chatId, startTime, endTime, pageSize }) {
 
 function isMaterialSignal(message) {
   const text = message.text || "";
+  const hasDouyinUrl = message.urls.some((url) => url.includes("douyin.com"));
+  const hasFeishuUrlOnly = message.urls.length > 0 && message.urls.every((url) => url.includes("feishu.cn"));
+  if (message.sender_type !== "user") return false;
+  if (hasFeishuUrlOnly) return false;
   return (
     text.includes("【市场素材】") ||
     text.includes("市场素材") ||
     text.includes("视频链接") ||
     text.includes("视频文案") ||
     text.includes("评论区截图") ||
-    message.urls.length > 0 ||
-    message.has_image
+    hasDouyinUrl ||
+    message.image_count > 0
   );
 }
 
@@ -191,11 +230,14 @@ function groupMaterialMessages(messages, groupWindowMinutes) {
 
   for (const message of normalized) {
     const last = bundles[bundles.length - 1];
+    const startsNewMaterial =
+      message.urls.some((url) => url.includes("douyin.com")) ||
+      message.text.includes("【市场素材】");
     const shouldJoinLast =
       last &&
       last.sender_key === message.sender_key &&
       message.create_time_ms - last.last_message_time_ms <= windowMs &&
-      !message.text.includes("【市场素材】");
+      !startsNewMaterial;
 
     if (shouldJoinLast) {
       last.messages.push(message);
@@ -205,6 +247,7 @@ function groupMaterialMessages(messages, groupWindowMinutes) {
         id: `material-${bundles.length + 1}`,
         sender_key: message.sender_key,
         sender_id: message.sender_id,
+        sender_name: message.sender_name,
         first_message_time_ms: message.create_time_ms,
         last_message_time_ms: message.create_time_ms,
         messages: [message]
@@ -215,6 +258,7 @@ function groupMaterialMessages(messages, groupWindowMinutes) {
   return bundles.map((bundle) => {
     const textBlocks = bundle.messages.map((message) => message.text).filter(Boolean);
     const urls = Array.from(new Set(bundle.messages.flatMap((message) => message.urls)));
+    const imageCount = bundle.messages.reduce((count, message) => count + message.image_count, 0);
     return {
       ...bundle,
       first_time_local: new Date(bundle.first_message_time_ms).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" }),
@@ -222,8 +266,8 @@ function groupMaterialMessages(messages, groupWindowMinutes) {
       message_ids: bundle.messages.map((message) => message.message_id),
       urls,
       text_blocks: textBlocks,
-      image_count: bundle.messages.filter((message) => message.has_image).length,
-      status: urls.length && textBlocks.length && bundle.messages.some((message) => message.has_image) ? "完整" : "待补"
+      image_count: imageCount,
+      status: urls.length && textBlocks.length && imageCount > 0 ? "完整" : "待补"
     };
   });
 }
@@ -262,7 +306,7 @@ function buildMarkdown({ bundles, startTime, endTime }) {
   bundles.forEach((bundle, index) => {
     lines.push(`### 素材 ${index + 1}：${bundle.status}`);
     lines.push("");
-    lines.push(`- 提交人ID: ${bundle.sender_id || bundle.sender_key}`);
+    lines.push(`- 提交人: ${bundle.sender_name || "未知成员"}`);
     lines.push(`- 提交时间: ${bundle.first_time_local}`);
     lines.push(`- 消息ID: ${bundle.message_ids.join(", ")}`);
     lines.push(`- 链接数量: ${bundle.urls.length}`);
@@ -292,8 +336,33 @@ function buildMarkdown({ bundles, startTime, endTime }) {
 
 function appendJsonl(filePath, records) {
   if (!records.length) return;
-  const lines = records.map((record) => JSON.stringify(record)).join("\n") + "\n";
+  const existingKeys = new Set();
+  if (fs.existsSync(filePath)) {
+    const existing = fs.readFileSync(filePath, "utf8").split(/\r?\n/).filter(Boolean);
+    for (const line of existing) {
+      const record = safeJsonParse(line);
+      if (record && Array.isArray(record.message_ids)) existingKeys.add(record.message_ids.join("|"));
+    }
+  }
+
+  const newRecords = records.filter((record) => !existingKeys.has(record.message_ids.join("|")));
+  if (!newRecords.length) return;
+  const lines = newRecords.map((record) => JSON.stringify(record)).join("\n") + "\n";
   fs.appendFileSync(filePath, lines, "utf8");
+}
+
+function toStoredRecord(bundle) {
+  return {
+    id: bundle.id,
+    sender_name: bundle.sender_name || "未知成员",
+    first_time_local: bundle.first_time_local,
+    last_time_local: bundle.last_time_local,
+    message_ids: bundle.message_ids,
+    urls: bundle.urls,
+    text_blocks: bundle.text_blocks,
+    image_count: bundle.image_count,
+    status: bundle.status
+  };
 }
 
 const args = parseArgs(process.argv.slice(2));
@@ -330,7 +399,7 @@ try {
     appendJsonl(jsonlPath, bundles.map((bundle) => ({
       synced_at: new Date().toISOString(),
       source: "feishu_group",
-      ...bundle
+      ...toStoredRecord(bundle)
     })));
   }
 

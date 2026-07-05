@@ -106,3 +106,38 @@ node scripts/feishu/sync-market-materials-from-chat.mjs --hours 24
 3. `node scripts/feishu/list-chat-messages.mjs --hours 24` 能读取群消息。
 4. `node scripts/feishu/sync-market-materials-from-chat.mjs --hours 24` 能生成当天市场素材同步文件。
 5. 08:00/12:00/17:00 SOP 里可以使用素材池，而不是只靠人工截图给 Codex 看。
+
+## 2026-07-05 跑通记录
+
+已跑通：
+
+```text
+群聊读取权限：已生效
+机器人能力：已生效
+群消息读取权限：im:message.group_msg 已生效
+项目群 chat_id：已写入本地 .env
+```
+
+实测结果：
+
+```text
+最近 24 小时读取群消息 21 条
+识别有效市场素材 6 条
+阿浩提交 3 条
+小彭提交 3 条
+链接、文案、截图均可进入素材池
+```
+
+输出文件：
+
+```text
+04_每日作战记录/YYYY-MM-DD_市场素材入站同步.md
+数据/市场素材池.jsonl
+```
+
+注意：
+
+```text
+市场素材池包含群内原始素材和对标文案，默认只保存在本地和 WPS 知识库，不推送到公开 GitHub 仓库。
+GitHub 只提交脚本和 SOP。
+```
