@@ -16,7 +16,7 @@ function shanghaiDateParts(date) {
 
 function shanghaiTimestamp(date, hour, minute = 0) {
   const { year, month, day } = shanghaiDateParts(date);
-  return String(Math.floor(Date.UTC(Number(year), Number(month) - 1, Number(day), hour - 8, minute, 0, 0) / 1000));
+  return String(Date.UTC(Number(year), Number(month) - 1, Number(day), hour - 8, minute, 0, 0));
 }
 
 function dateLabel(date) {

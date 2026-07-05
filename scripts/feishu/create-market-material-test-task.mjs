@@ -68,7 +68,7 @@ const task = {
     "验收标准：群里能看到链接、文案、评论截图；任务评论里回复“已提交”。"
   ].join("\n"),
   due: {
-    timestamp: String(Math.floor(due.getTime() / 1000)),
+    timestamp: String(due.getTime()),
     is_all_day: false
   },
   members: members(assigneeOpenIds),
