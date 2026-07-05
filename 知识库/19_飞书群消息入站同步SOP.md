@@ -39,7 +39,7 @@ node scripts/feishu/sync-market-materials-from-chat.mjs --hours 24
 
 1. 群聊读取权限：优先开 `im:chat:readonly` 或 `im:chat.group_info:readonly`。
 2. 机器人能力：在应用功能里开启机器人能力。
-3. 消息读取权限：开通“获取单聊、群组消息”或“获取与发送单聊、群组消息”相关权限，用于读取群内最近消息。
+3. 消息读取权限：开通权限码 `im:message.group_msg`。后台中文名称通常是“获取群组消息”或“获取与发送单聊、群组消息”相关权限，用于读取群内最近消息。
 4. 确认应用或机器人已经在 `AI商业IP增长项目组` 群里。
 5. 发布应用版本，让权限生效。
 

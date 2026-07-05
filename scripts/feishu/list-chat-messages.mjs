@@ -47,7 +47,7 @@ function explainFeishuError(error) {
   if (message.includes("im:message")) {
     return [
       "Feishu app is missing message read permission.",
-      "Enable message read permission in Feishu Open Platform, publish the app version, then rerun.",
+      "Enable scope im:message.group_msg in Feishu Open Platform, publish the app version, then rerun.",
       "",
       message
     ].join("\n");
