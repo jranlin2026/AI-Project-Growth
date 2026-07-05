@@ -191,3 +191,33 @@ https://applink.feishu.cn/client/todo/detail?guid=02623791-b860-4941-8c61-9f7906
   -> 生成完整脚本
   -> 拆飞书执行任务
 ```
+
+## 2026-07-05 入站同步补充
+
+今天发现一个关键边界：群机器人 Webhook 只能发送消息，不能读取群成员发的消息。所以组员在群里发了链接、文案、截图以后，Codex 不会自动知道。
+
+已新增入站同步机制：
+
+```powershell
+node scripts/feishu/list-chats.mjs
+node scripts/feishu/list-chat-messages.mjs --hours 24
+node scripts/feishu/sync-market-materials-from-chat.mjs --hours 24
+```
+
+新的标准流程：
+
+```text
+阿浩/小彭在群里发三件套
+  -> Codex 在 12:00 或 17:00 读取群消息
+  -> 自动生成市场素材同步文件
+  -> 增长负责人拆解素材
+  -> 进入次日选题、脚本和执行包
+```
+
+前置条件：
+
+1. 飞书开放平台应用开通群聊读取权限。
+2. 飞书开放平台应用开通消息读取权限。
+3. `.env` 配置 `FEISHU_MARKET_MATERIAL_CHAT_ID`。
+
+这条机制跑通后，组员只需要按三件套提交，不需要再单独提醒 Codex“我发了”。
