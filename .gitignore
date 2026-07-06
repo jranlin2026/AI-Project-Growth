@@ -4,4 +4,5 @@
 node_modules/
 *.log
 数据/
+data/
 04_每日作战记录/*_市场素材入站同步.md

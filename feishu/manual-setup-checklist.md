@@ -144,3 +144,41 @@ FEISHU_APP_SECRET=
 3. `read-bitable-records.mjs` 能读取多维表格日报记录。
 
 这三件事跑通后，再做自动创建飞书任务。
+
+## 6. 群消息实时入站
+
+如果要让 Codex 对群消息“实时有反应”，只靠群机器人 Webhook 不够，还需要配置飞书事件订阅。
+
+你需要手动做：
+
+1. 在飞书开放平台进入当前企业自建应用。
+2. 确认机器人能力已开启，并且机器人已经在 `AI商业IP增长项目组` 群里。
+3. 开通群消息接收/读取相关权限，并发布应用版本。
+4. 进入“事件订阅”，配置请求地址：
+
+```text
+https://你的公网域名/feishu/events
+```
+
+5. 填写 Verification Token；如开启 Encrypt Key，也要记录下来。
+6. 订阅事件：`im.message.receive_v1`。
+7. 在项目 `.env` 填入：
+
+```text
+FEISHU_EVENT_HOST=0.0.0.0
+FEISHU_EVENT_PORT=8787
+FEISHU_EVENT_PATH=/feishu/events
+FEISHU_VERIFICATION_TOKEN=
+FEISHU_EVENT_ENCRYPT_KEY=
+FEISHU_EVENT_REPLY_MODE=log
+```
+
+本地测试：
+
+```powershell
+node scripts/feishu/event-server.mjs
+node scripts/feishu/test-event-server.mjs
+node scripts/feishu/process-event-inbox.mjs
+```
+
+注意：飞书后台配置的请求地址必须是公网可访问地址。本地电脑上的 `127.0.0.1` 或 `localhost` 只能本机访问，飞书云端访问不到。
