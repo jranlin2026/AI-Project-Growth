@@ -21,6 +21,14 @@ function sign(timestamp, secret) {
   return crypto.createHmac("sha256", stringToSign).digest("base64");
 }
 
+function normalizeEscapedText(text) {
+  return text
+    .replace(/\\r\\n/g, "\n")
+    .replace(/\\n/g, "\n")
+    .replace(/\\r/g, "\r")
+    .replace(/\\t/g, "\t");
+}
+
 async function readStdin() {
   if (process.stdin.isTTY) return "";
   const chunks = [];
@@ -30,7 +38,7 @@ async function readStdin() {
 
 const args = parseArgs(process.argv.slice(2));
 const stdinText = await readStdin();
-const text = args.text || stdinText;
+const text = normalizeEscapedText(args.text || stdinText);
 
 if (!text) {
   throw new Error("Provide message text with --text or pipe text into stdin.");
@@ -62,4 +70,3 @@ if (!response.ok) {
 }
 
 console.log(resultText);
-
